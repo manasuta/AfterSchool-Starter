@@ -1,0 +1,12 @@
+name: AfterSchool
+targets:
+  AfterSchool:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources: [App]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: jp.workshop.afterSchool
+      GENERATE_INFOPLIST_FILE: YES
+      INFOPLIST_KEY_UILaunchScreen_Generation: YES
+      INFOPLIST_KEY_CFBundleDisplayName: 放課後

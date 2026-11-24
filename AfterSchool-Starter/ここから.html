@@ -1,0 +1,49 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>放課後｜参加者ガイド</title><style>*{box-sizing:border-box}body{max-width:760px;margin:48px auto;padding:0 24px;background:#faf8f2;color:#222d27;font:17px/1.85 system-ui}h1{font-size:38px;line-height:1.35}h2{margin-top:44px;border-bottom:2px solid #c5d5c5}h3{margin-bottom:4px}p{margin:8px 0}a{color:#126249}details{background:white;border:1px solid #ccd4c9;border-radius:12px;margin:12px 0;padding:14px 18px}summary{cursor:pointer;font-weight:650}code,pre{background:#edece5}pre{overflow:auto;padding:12px}small{color:#546557}</style>
+<small>11月24日　ACT314 ｜ SwiftUI ワークショップ</small><h1>この投稿の、どこを作る？</h1>
+<img src="完成見本.png" alt="放課後の投稿画面の完成イメージ" style="float:right;width:28%;max-width:180px;margin:0 0 16px 22px;border-radius:12px">
+<p>投稿者欄、写真と一言、タップできるハート。ひとつ選んで、自分の手でタイムラインに載せよう。</p>
+<h2>最初の画面を見よう</h2><p>ZIPをFinderでダブルクリックして展開し、このガイドと同じフォルダの AfterSchool.xcodeproj を開き、iPhoneシミュレーターを選んで⌘R。完成見本と比べて、どのグレーの仮枠（PartSlot）が自分の担当になるか指してみよう。</p>
+<h2 style="clear:both">図面から作り方を考える</h2><p><a href="https://www.figma.com/design/H06VUeLZgELH5h8H1Zym9W">Figmaの設計図を開く ↗</a>。赤線をひとつ選び「何と何の間が何ptか」を説明してみよう。</p>
+<ul><li>A　名前と時刻をまとめたら、アイコンはそのどこに並ぶ？</li><li>B　写真と一言の左端を比べよう。どちらに余白をつける？</li><li>C　押したら何が変わる？　もう一度押したら？</li></ul>
+<p>Xcode 左側の App → Parts で A は Author.swift、B は Photo.swift、C は Like.swift を開きます。選んだ部品の body 内にある PartSlot の行を編集します。</p><h2>形にするための道具箱</h2><p>図面を見て「何をしたいか」を決めたら、近い言葉を開こう。全部覚える必要はありません。下の短い例を一つ試し、Canvasのどこが変わったか確かめてください。</p>
+<details><summary>文字や写真を表示したい</summary><pre>Text("はる")
+Image("campus")
+Image(systemName: "heart")</pre><p>上から順に、文字、教材に入っている写真、標準のシンボルを表示します。写真を横幅に合わせたいときは Image("campus").resizable().scaledToFit() と書けます。</p></details>
+<details><summary>縦・横に並べたい／余白をつけたい</summary><pre>HStack(spacing: 12) {
+    Text("🌱")
+    .font(.system(size: 24))
+    Text("はる")
+}</pre><p>HStack は横並び、VStack は縦並びです。spacing は中の部品どうしの間隔。12を4にすると何が近づきますか？</p><pre>Text("はる").padding(.leading, 16)</pre><p>padding は指定した部品の外側に足す余白です。leading は日本語表示では左側。投稿者欄全体を端から離すときは、行をまとめた HStack に付けます。</p></details>
+<details><summary>丸いアイコンや、角の丸い写真を作りたい</summary><pre>Text("🌱")
+    .font(.system(size: 24))
+    .frame(width: 48, height: 48)
+    .background(Color.green.opacity(0.15))
+    .clipShape(Circle())</pre><p>上から順に、絵文字を24ptにする、置き場所を48ptの正方形にする、背景を塗る、その背景ごと円形に切り抜く、という意味です。最後の1行を次の候補に変えて、見た目を比べてみましょう。</p><pre>.clipShape(RoundedRectangle(cornerRadius: 12))</pre><p>こちらは四角い輪郭を残して角を丸めます。cornerRadius は角の丸みの半径。12を4に変えるとどうなる？　投稿者欄の図面に合う形はどちらでしょう。</p></details>
+<details><summary>名前を目立たせたい／時刻を控えめにしたい</summary><pre>Text("はる").font(.system(size: 17))
+Text("12分前").font(.system(size: 13)).foregroundStyle(.gray)</pre><p>名前は17pt、補足は13pt。foregroundStyle(.gray) で補足だけを灰色にします。</p></details>
+<details><summary>押すたびに見た目を切り替えたい</summary><p>Button がタップを受け取り、@State が今の状態を覚えます。例えば isLiked という値が true なら選択中、false なら未選択。isLiked.toggle() で交互に切り替えられます。「C　いいねボタン」のヒントで、この3つをどこに書くか確認できます。</p></details>
+<p>道具箱から一つ選んだら、図面の数字や自分の名前に変えてみよう。もっと知りたいときは、見つけた名前を使って「SwiftUI clipShape Circle」のように検索できます。</p>
+<h2>まず部品だけを作る</h2><p>App → Parts から A は Author.swift、B は Photo.swift、C は Like.swift を開こう。body 内の PartSlot で始まる行が作業場所。Editor → Canvas でプレビューを表示し、必要なら Resume を押そう。例えば枠を <code>Text("まなと")</code> に変えると文字が現れる。図面と見比べながら、ひとつずつ加えてみよう。</p><details><summary>A　投稿者欄</summary><p>丸いアイコンの右に、自分の名前と投稿時刻を置きます。最初に名前と時刻だけを書き、その2つの左端をそろえてみましょう。アイコンを加えるなら、どこを横並びにしますか？</p>
+<details><summary>最初の数行を見る</summary><pre>VStack(alignment: .leading, spacing: 4) {
+    Text("自分の名前").font(.system(size: 17))
+    Text("キャンパス・12分前").font(.system(size: 13)).foregroundStyle(.gray)
+}</pre><p>このまとまりを HStack(spacing: 12) で包み、左に好きな絵文字の Text を置きます。絵文字の枠は48×48。背景色を付けて clipShape(Circle())。HStackの右端に Spacer()、外側に左右16、上下12の padding を加えます。</p></details></details>
+<details><summary>B　写真＋ひとこと</summary><p>写真と一言は同じファイルにあります。MyPhotoView に写真、MyCaption に自分の一言を書きます。その間の操作列は土台が配置します。</p><details><summary>2つの枠に何を書く？</summary><p>写真の枠に次の1行を入れます。</p><pre>Image("campus").resizable().scaledToFit()</pre><p>一言の枠には、自分の文章を入れてください。</p><pre>Text("ここに一言")
+    .font(.system(size: 14))
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.horizontal, 16)
+    .padding(.top, 8)</pre><p>maxWidth: .infinity で使える横幅まで広げ、leading で文を左端に寄せます。horizontal は左右両方。左右に16pt、上に8ptの余白ができます。</p></details></details>
+<details><summary>C　いいねボタン</summary><p>ハートと「24」を横に並べます。押すと好きな色のハートと「25」、もう一度押すと元に戻ります。</p><details><summary>状態とタップのヒント</summary><p>MyLikeButton の var body の上に次の行を追加します。</p><pre>@State private var isLiked = false</pre><p>bodyの中は次の形から始め、ハートの色と押せる範囲を仕上げます。</p><pre>Button {
+    isLiked.toggle()
+} label: {
+    HStack(spacing: 6) {
+        Image(systemName: isLiked ? "heart.fill" : "heart")
+            .font(.system(size: 20))
+            .foregroundStyle(isLiked ? Color.red : Color.primary)
+        Text(isLiked ? "25" : "24").font(.system(size: 17))
+    }
+    .frame(minWidth: 44, minHeight: 44)
+    .contentShape(Rectangle())
+}
+.buttonStyle(.plain)</pre><p>「条件 ? A : B」は条件が成立するとA、それ以外はBを選びます。plain はボタン標準の装飾を控えめにします。赤色の指定は Image に付いているので、押すとハートだけが赤くなります。Xcode で ⇧⌘L を押してライブラリの Symbols を開くとシンボル名を探せます。</p></details></details>
+<h2>自分の部品をSNSに載せる</h2><p>Feed.swift を開き、自分のコースのコメントのすぐ下にある PartSlot の行を、次の呼び出しに置き換えよう。</p><ul><li>A　投稿者欄 → <code>MyAuthorView()</code></li><li>B　写真 → <code>MyPhotoView()</code>、一言 → <code>MyCaption()</code></li><li>C　いいね → <code>MyLikeButton()</code></li></ul><p>⌘R。最初に指した枠はどう変わった？　ハートを作った人は数字を2回押してみよう。自分が作った場所と、それを画面に載せた行をペアに見せたら完成。</p><p>プレビューが開かない場合は、組み込みを先に済ませて⌘Rで途中経過を確認できます。もうひとつ作りたい人は、別の枠を選んで続けましょう。</p><details><summary>完成例を見る</summary><p>Finderの「答え合わせ」フォルダで同名のSwiftファイルを開き、自分が困っている部分を見比べよう。</p></details></html>
